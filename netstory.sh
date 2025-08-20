@@ -160,7 +160,7 @@ if [[ ${#EXTERNAL_FONTS[@]} -gt 0 ]]; then
 fi
 
 # -------- Puppeteer: Try various launchers ----------
-cat > /tmp/puppeteer_netstory.js <<'EOF'
+cat > ./puppeteer_netstory.js <<'EOF'
 const puppeteer = require('puppeteer');
 const target = process.argv[2];
 (async () => {
@@ -184,7 +184,9 @@ const target = process.argv[2];
     }
   });
   await page.goto(target, {waitUntil: "networkidle2", timeout: 35000});
-  await page.waitForTimeout(3000); // Let JS-driven requests fire
+  await new Promise(resolve => setTimeout(resolve, 3000)); // compatible wait
+
+
   // Summarize output
   let out = [];
   for (const req of requests) {
@@ -216,15 +218,15 @@ echo "🕸️ Launching real-browser analysis with Puppeteer (Chrome headless)..
 PUPPETEER_RESULT=1
 
 # Try: npx node ..., node ... (project-local), node ... (user-local), npx ...
-npx node /tmp/puppeteer_netstory.js "https://$DEST" && PUPPETEER_RESULT=0
+npx node puppeteer_netstory.js "https://$DEST" && PUPPETEER_RESULT=0
 if [ $PUPPETEER_RESULT -ne 0 ]; then
-  node /tmp/puppeteer_netstory.js "https://$DEST" && PUPPETEER_RESULT=0
+  node puppeteer_netstory.js "https://$DEST" && PUPPETEER_RESULT=0
 fi
 if [ $PUPPETEER_RESULT -ne 0 ] && [ -x ~/.npm-global/bin/node ]; then
-  ~/.npm-global/bin/node /tmp/puppeteer_netstory.js "https://$DEST" && PUPPETEER_RESULT=0
+  ./puppeteer_netstory.js "https://$DEST" && PUPPETEER_RESULT=0
 fi
 if [ $PUPPETEER_RESULT -ne 0 ]; then
-  npx /tmp/puppeteer_netstory.js "https://$DEST" && PUPPETEER_RESULT=0
+  npx puppeteer_netstory.js "https://$DEST" && PUPPETEER_RESULT=0
 fi
 
 if [ $PUPPETEER_RESULT -ne 0 ]; then
@@ -235,7 +237,7 @@ if [ $PUPPETEER_RESULT -ne 0 ]; then
   echo -e "  And ensure you run this script WITHOUT sudo."
 fi
 
-rm -f /tmp/puppeteer_netstory.js
+#rm -f ./puppeteer_netstory.js
 
 # ------ Bash-side summary -----
 TRACE+="\n\nSummary:\n$DEST ($DEST_IP), path: $FLOW

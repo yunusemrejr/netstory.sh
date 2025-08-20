@@ -114,7 +114,7 @@ MIT or public domain — feel free to adapt and share!
 
 ## Credits
 
-Script logic, network storytelling, and browser automation adapted for troubleshooting by [yunfx] and Perplexity AI’s Assistant.
+Script logic, network storytelling, and browser automation adapted for troubleshooting by Yunus Emre Vurgun.
 
 ***
 
